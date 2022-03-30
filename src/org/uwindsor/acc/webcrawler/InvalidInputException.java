@@ -1,4 +1,4 @@
-package webcrawler;
+package org.uwindsor.acc.webcrawler;
 
 public class InvalidInputException extends Exception {
 	

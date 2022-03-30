@@ -1,8 +1,8 @@
-package SearchStringProcessing;
+package org.uwindsor.acc.searchstringprocessing;
 
 import java.util.ArrayList;
 
-import webcrawler.InvalidInputException;
+import org.uwindsor.acc.webcrawler.InvalidInputException;
 
 /**
 * This code is used to implement the RegexFilter and StopWords classes.

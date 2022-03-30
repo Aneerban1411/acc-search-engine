@@ -1,4 +1,4 @@
-package webcrawler;
+package org.uwindsor.acc.webcrawler;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;   

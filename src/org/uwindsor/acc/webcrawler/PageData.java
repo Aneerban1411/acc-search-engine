@@ -1,4 +1,4 @@
-package webcrawler;
+package org.uwindsor.acc.webcrawler;
 
 /**
 * This class is the strcture used to save a url link

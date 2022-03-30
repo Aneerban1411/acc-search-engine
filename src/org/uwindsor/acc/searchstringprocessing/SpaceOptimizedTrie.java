@@ -1,4 +1,4 @@
-package SearchStringProcessing;
+package org.uwindsor.acc.searchstringprocessing;
 
 import java.util.HashMap;
 import java.util.Map;

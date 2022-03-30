@@ -1,8 +1,8 @@
-package SearchStringProcessing;
+package org.uwindsor.acc.searchstringprocessing;
 
 import java.util.ArrayList;
 
-import webcrawler.InvalidInputException;
+import org.uwindsor.acc.webcrawler.InvalidInputException;
 
 /**
 * Contains a list of standard Stop words from the NLTK.

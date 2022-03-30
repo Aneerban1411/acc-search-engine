@@ -1,4 +1,4 @@
-package SearchStringProcessing;
+package org.uwindsor.acc.searchstringprocessing;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
