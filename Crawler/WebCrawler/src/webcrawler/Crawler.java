@@ -33,7 +33,7 @@ public class Crawler {
 			try 
 			{
 				//get document using Jsoup
-				Document page = Jsoup.connect(url).get();
+				Document page = Jsoup.connect(url).ignoreContentType(true).get();
 				
 				//add url and page text into the List
 				urlLinks.put(url, new PageData(depth, page.title(), page.text()));
@@ -45,13 +45,15 @@ public class Crawler {
 				for(Element link : linksOnUrl)
 					crawl(link.attr("abs:href"), depth);				
 			} 
-			catch (IOException e) {
-				e.printStackTrace();
+			catch (Exception e) {
+				//e.printStackTrace();
 			}
 		}
 	}
 	public static void main(String[] args) {
-		crawl("https://www.javatpoint.com/digital-electronics", 0);
+		
+		crawl("https://regex101.com/", 0);
+		//crawl("https://www.javatpoint.com/digital-electronics", 0);
 		/*
 		 * for(String key : urlLinks.keySet()) {
 		 * System.out.println("Depth:"+urlLinks.get(key).depth

@@ -2,6 +2,8 @@ package SearchStringProcessing;
 
 import java.util.ArrayList;
 
+import webcrawler.InvalidInputException;
+
 /**
 * This code is used to implement the RegexFilter and StopWords classes.
 * It return the output of a sample search input string
@@ -11,7 +13,7 @@ import java.util.ArrayList;
 */
 public class StringProcessing {
 
-	public static void main(String[] args) {	
+	public static void main(String[] args) throws InvalidInputException {	
 		
 		String searchString = "This@is-a (precarious) situation!";	
 		

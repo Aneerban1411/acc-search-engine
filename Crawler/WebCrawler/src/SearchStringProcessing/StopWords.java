@@ -2,6 +2,8 @@ package SearchStringProcessing;
 
 import java.util.ArrayList;
 
+import webcrawler.InvalidInputException;
+
 /**
 * Contains a list of standard Stop words from the NLTK.
 * The list is then added to a Trie that utilizes HashMaps to reduce
@@ -33,8 +35,9 @@ public class StopWords {
     * Removes standard stop-words from an input ArrayList<String>
     * @param searchWordsList List of words
     * @return A string ArrayList of words.
+	 * @throws InvalidInputException 
     */
-	public ArrayList<String> RemoveStopWords(ArrayList<String> searchWordsList)
+	public ArrayList<String> RemoveStopWords(ArrayList<String> searchWordsList) throws InvalidInputException
 	{
 		ArrayList<String> finalSearchStringList = new ArrayList<String>();
 		
@@ -44,7 +47,8 @@ public class StopWords {
 				finalSearchStringList.add(str);
 			}
 		}
-		
+		if(finalSearchStringList.size() == 0)
+			throw new InvalidInputException("Given input cannot be parsed.");
 		return finalSearchStringList;
 	}
 	
@@ -52,8 +56,9 @@ public class StopWords {
     * Calls RemoveStopWordsString() and returns a string output
     * @param searchWordsList List of words
     * @return Single string of words.
+	 * @throws InvalidInputException 
     */
-	public String RemoveStopWordsString(ArrayList<String> searchWordsList)
+	public String RemoveStopWordsString(ArrayList<String> searchWordsList) throws InvalidInputException
 	{
 		ArrayList<String> finalSearchStringList;
 		String finalSearchString = "";
