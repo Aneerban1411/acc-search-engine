@@ -105,10 +105,45 @@ public class loadDB {
     	HashMap<String, HashMap<String, String>> DB = new HashMap<String, HashMap<String, String>>();
     	return DB;
     }
-    public static void writeDB(HashMap<String, HashMap<String, String>> DB, String path)
+    public static void writeDB(HashMap<String, HashMap<String, String>> map, String path)
     {
-    	//Driver function made by rakshana
-    	;
+    	File file = new File(path);
+  
+        BufferedWriter bf = null;
+  
+        try {
+  
+            // create new BufferedWriter for the output file
+            bf = new BufferedWriter(new FileWriter(file));
+  
+            // iterate map entries
+            for (Map.Entry<String, HashMap<String, String>> entry : map.entrySet()) {
+            	String str = entry.getKey()+" ";
+            	
+            	for (Map.Entry<String,String> i:entry.getValue().entrySet()) {
+            		// put key and value separated by a colon
+                    str += i.getKey() + " " + i.getValue() + " ";
+               
+            	}
+            	 bf.write(str);
+            	 bf.newLine();
+            }
+  
+            bf.flush();
+        }
+        catch (IOException e) {
+            e.getMessage();
+        }
+        finally {
+  
+            try {
+  
+                // always close the writer
+                bf.close();
+            }
+            catch (Exception e) {
+            }
+        }
     }
     public static HashMap<String, String> readDBURLs(String path)
     {
