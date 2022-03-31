@@ -8,8 +8,6 @@ import java.util.Scanner;
 public class SpellCheck {
 	
 	private static ArrayList dictWords;
-	static HashMap<Integer, String> map = new HashMap<>();
-
 	
 	public SpellCheck()
 	{
@@ -27,9 +25,7 @@ public class SpellCheck {
 			{
 				String data = myReader.nextLine();
 				//System.out.println(data);
-				//dictWords.add(data);
-				map.put(count,data);
-				count++;
+				dictWords.add(data);
 			}
 			myReader.close();
 		}
@@ -43,10 +39,10 @@ public class SpellCheck {
 	{
 		int holder, smallestWord = -1, smallestDistance = 100;
 		//System.out.println(dictWords.size());
-		for(int i=0;i<map.size();i++)
+		for(int i=0;i<dictWords.size();i++)
 		{
 			//System.out.println(dictWords.get(i).toString());
-			holder = editDistance(inputWord,map.get(i));
+			holder = editDistance(inputWord,dictWords.get(i).toString());
 			
 			if(holder < smallestDistance)
 			{
@@ -61,7 +57,7 @@ public class SpellCheck {
 		}
 		else
 		{
-			return map.get(smallestWord).toString();
+			return dictWords.get(smallestWord).toString();
 		}
 	}
 	public static int editDistance(String word1, String word2)
