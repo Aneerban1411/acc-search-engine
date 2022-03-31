@@ -3,16 +3,19 @@ package org.uwindsor.acc.search;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
+import org.uwindsor.acc.cache.CacheModule;
+import org.uwindsor.acc.loaddb.LoadDB;
 public class Search
 {
+	
+	static CacheModule cacheModule = CacheModule.getInstance();
 	// Function 1 : Reading Hash Map
 	public static Map<String, HashMap<String, String>> readDB(String path)
 	{
@@ -61,7 +64,9 @@ public class Search
 	{
 		HashMap<String, String> result = new HashMap<String, String>();
 		result = hashMapDB.get(key);
-		if(result.size()!=0)
+		if( result == null)
+			return result;
+		if(result!= null && result.size()!=0)
 		{
 			return result;
 		}
@@ -109,11 +114,15 @@ public class Search
         while(iterator.hasNext())
         {
         	HashMap<String, String> element = iterator.next();
-        	lengthArr[count] = element.size();
-        	count++;
+        	if( element!=null ) {
+        		lengthArr[count] = element.size();
+        	
+        		count++;
+        	}
         }
         int indexSmallest = indexOfSmallest(lengthArr);
         HashMap<String, String> smallest = arrList.get(indexSmallest);
+        if( smallest!= null ) {
         arrList.remove(indexSmallest);
         iterator = arrList.iterator();
         while(iterator.hasNext())
@@ -133,6 +142,8 @@ public class Search
             }
         }
         return smallest;
+        }
+        return null;
 	}
 	
 	// Union
@@ -172,6 +183,52 @@ public class Search
         return smallest;
 	}
 	
+	
+	
+	public static void performSearch(String[] searchTerms) {
+		
+		String pathDB = System.getProperty("user.dir")+"/writeDB.txt";
+		String pathURL = System.getProperty("user.dir")+"/writeURL.txt";
+		
+		// Reading HashMap
+		Map<String, HashMap<String, String>> hashTable = readDB(pathDB);
+		Map<String, String> dbURL = LoadDB.readDBURLs(pathURL);
+		List<HashMap<String, String>> arrList = new ArrayList<HashMap<String, String>>();
+		for( String searchTerm: searchTerms ) {
+			
+			if( !cacheModule.isCacheEntryPresent(searchTerm) ) {
+				HashMap<String, String> searchResult = searching(searchTerm, hashTable, dbURL);
+				arrList.add(searchResult);
+				if( cacheModule.isCacheFull())
+					cacheModule.removeCacheEntry(cacheModule.getCacheEntryWithLowestHit());
+				cacheModule.insertCacheEntry(searchTerm, searchResult);
+				cacheModule.updateCount(searchTerm);
+			}
+			else {
+				arrList.add(cacheModule.getCacheEntry(searchTerm));
+				cacheModule.updateCount(searchTerm);
+			}
+		}
+		
+		// Find Intersection
+		HashMap<String, String> result = findIntersection(arrList);
+		
+		if(result!=null && result.size()==0)
+		{
+			result = findUnion(arrList);
+		}
+		result = LoadDB.sortByValueString(result);
+	    // Iterate over HashMap entries
+		
+		if( result== null ) {
+			return ;
+		}
+		for (Map.Entry<String, String> entry : result.entrySet())
+        {
+        	// Put key and value separated by a colon
+			System.out.println(entry.getKey() + " " + entry.getValue() + " ");    
+        }
+	}
 	// Main
 	public static void main(String[] Args)
 	{
@@ -180,7 +237,7 @@ public class Search
 		
 		// Reading HashMap
 		Map<String, HashMap<String, String>> hashTable = readDB(pathDB);
-		Map<String, String> dbURL = readDBURLs(pathURL);
+		Map<String, String> dbURL = LoadDB.readDBURLs(pathURL);
 		List<HashMap<String, String>> arrList = new ArrayList<HashMap<String, String>>();
 		String[] searchTerms = {"chole", "Bhature"};
 		for(String searchTerm: searchTerms)

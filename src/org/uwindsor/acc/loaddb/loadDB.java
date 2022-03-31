@@ -1,11 +1,13 @@
 package org.uwindsor.acc.loaddb;
 
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
@@ -19,7 +21,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-public class loadDB {
+import org.uwindsor.acc.search.Search;
+import org.uwindsor.acc.searchstringprocessing.RegexFilter;
+import org.uwindsor.acc.searchstringprocessing.StopWords;
+import org.uwindsor.acc.webcrawler.InvalidInputException;
+public class LoadDB {
     
     // Function to count frequency of
     // words in the given string
@@ -32,6 +38,8 @@ public class loadDB {
 			return txt;
 		}
 		catch(IOException e) {
+			return "";
+		} catch( Exception ex) {
 			return "";
 		}
 		
@@ -59,6 +67,31 @@ public class loadDB {
             }
         }
         return freqMap;
+    }
+    
+    public static HashMap<String, String> sortByValueString(HashMap<String, String> map)
+    {
+    	if( map==null) {
+    		return map;
+    	}
+        // Create a list from elements of HashMap
+        List<Map.Entry<String, String> > list
+            = new LinkedList<Map.Entry<String, String> >(
+                map.entrySet());
+ 
+        // Sort the list using lambda expression
+        Collections.sort(
+            list,
+            (i1,
+             i2) -> i1.getValue().compareTo(i2.getValue()));
+ 
+        // put data from sorted list to hashmap
+        HashMap<String, String> temp
+            = new LinkedHashMap<String, String>();
+        for (Map.Entry<String, String> aa : list) {
+            temp.put(aa.getKey(), (String)aa.getValue());
+        }
+        return temp;
     }
     
     public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> map)
@@ -95,16 +128,7 @@ public class loadDB {
     	}
     	return freqMap100;
     }
-    public static String removeStopWords(String text) {
-    	// Driver function for prasham's remove stop words function
-    	return text;
-    }
-    public static HashMap<String, HashMap<String, String>> readDB(String path)
-    {
-    	// Driver function that rakshana created
-    	HashMap<String, HashMap<String, String>> DB = new HashMap<String, HashMap<String, String>>();
-    	return DB;
-    }
+    
     public static void writeDB(HashMap<String, HashMap<String, String>> map, String path)
     {
     	File file = new File(path);
@@ -220,7 +244,7 @@ public class loadDB {
     	
     }
 
-    public static void loadDataBase(final String[] urls, String pathDBKeys, String pathDBURLs) {
+    public static void loadDataBase(final String[] urls, String pathDBKeys, String pathDBURLs) throws InvalidInputException {
     	HashMap<String, HashMap<String, String>> dbKeys;
     	HashMap<String, String> dbURLs;
     	if(pathDBKeys == "")
@@ -232,7 +256,8 @@ public class loadDB {
     	}
     	else
     	{
-    		dbKeys = readDB(pathDBKeys);
+    		dbKeys = (HashMap<String, HashMap<String, String>>) Search.readDB(pathDBKeys);
+    	}
     		
     	if(pathDBURLs == "")
     	{
@@ -248,7 +273,22 @@ public class loadDB {
     	for(String url:urls)
     	{
 	    	String text = convertText(url);
-	    	String newText = removeStopWords(text);
+	    	//String newText = removeStopWords(text);
+			
+			RegexFilter rFilter = new RegexFilter();
+			StopWords sw = new StopWords();
+			
+			ArrayList<String> searchStringAfterRegex = rFilter.StringProcessViaRegex(text);
+			System.out.println("Original string: \""+text+"\"");
+			System.out.println("String after Regex: "+searchStringAfterRegex.toString());
+			
+			String newText = null;
+			try {
+				newText = sw.RemoveStopWordsString(searchStringAfterRegex);
+			} catch ( Exception ex) {
+				continue;
+			}
+			
 	    	dbURLs.put(url, newText);
 	    	HashMap<String, Integer> freqMap = countFreq(newText);
 	    	freqMap = sortByValue(freqMap);
@@ -271,5 +311,5 @@ public class loadDB {
     	writeDB(dbKeys, pathDBKeys);
     	writeDBURLs(dbURLs, pathDBURLs);
     }
-    }
+    
 }

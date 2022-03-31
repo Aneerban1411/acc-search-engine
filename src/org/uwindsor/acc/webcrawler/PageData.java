@@ -8,7 +8,7 @@ package org.uwindsor.acc.webcrawler;
 */
 public class PageData{
 	int depth;
-	String title;
+	public String title;
 	String content;
 	//Constructor
 	public PageData()

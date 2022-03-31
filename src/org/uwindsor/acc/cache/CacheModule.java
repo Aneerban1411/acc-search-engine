@@ -16,8 +16,8 @@ import java.util.Set;
 public class CacheModule {
 
 	private static CacheModule cacheModule = null;
-	private static Map<String, List<Integer>> keyToPages = null;
-	private static Map<String, Integer> hitCount = null;
+	private static HashMap<String, HashMap<String,String>> keyToPages = null;
+	private static HashMap<String, Integer> hitCount = null;
 	
 	/**
 	 * Gives the maximum size of the cache
@@ -79,10 +79,10 @@ public class CacheModule {
 	 * @param key
 	 * @return boolean
 	 */
-	public List<Integer> getCacheEntry(String key){
+	public HashMap<String,String> getCacheEntry(String key){
 		
 		if(!isCacheEntryPresent(key)) {
-			return new ArrayList<>();
+			return new HashMap<>();
 		}
 		
 		hitCount.put(key, hitCount.get(key)+1);
@@ -147,7 +147,7 @@ public class CacheModule {
 	 * 
 	 * 2. When the entry is not present in cache
 	 */
-	public void insertCacheEntry(String key, List<Integer> pageIds) {
+	public void insertCacheEntry(String key, HashMap<String,String> pageIds) {
 		boolean isCacheFull = isCacheFull();
 		
 		if(isCacheFull) {
@@ -157,5 +157,13 @@ public class CacheModule {
 		
 		keyToPages.put(key, pageIds);
 		hitCount.put(key, 0);
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void updateCount(String key) {
+		hitCount.put(key, hitCount.get(key)+1);
 	}
 }

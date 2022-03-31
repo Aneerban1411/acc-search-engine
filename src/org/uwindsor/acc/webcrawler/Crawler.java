@@ -25,10 +25,10 @@ public class Crawler {
     * @param url string URL
     * @param depth the depth until which crawler will crawl
     */
-	public static void crawl(String url, int depth)
+	public static void crawl(String url, int depth, HashMap<String, PageData> urlLinksLocal )
 	{
 		//Max number of URLs to crawl and condition to limit depth
-		if(urlLinks.size() < 200 && !urlLinks.containsKey(url) && depth < maximum_depth)
+		if(urlLinksLocal.size() < 200 && !urlLinksLocal.containsKey(url) && depth < maximum_depth)
 		{
 			try 
 			{
@@ -36,14 +36,14 @@ public class Crawler {
 				Document page = Jsoup.connect(url).ignoreContentType(true).get();
 				
 				//add url and page text into the List
-				urlLinks.put(url, new PageData(depth, page.title(), page.text()));
+				urlLinksLocal.put(url, new PageData(depth, page.title(), page.text()));
 				//Get links on present url page
 				Elements linksOnUrl = page.select("a[href]");
 				depth++;
 				System.out.println("Crawling url: "+url);
 				//Call crawl recursively
 				for(Element link : linksOnUrl)
-					crawl(link.attr("abs:href"), depth);				
+					crawl(link.attr("abs:href"), depth, urlLinksLocal);				
 			} 
 			catch (Exception e) {
 				//e.printStackTrace();
@@ -52,7 +52,7 @@ public class Crawler {
 	}
 	public static void main(String[] args) {
 		
-		crawl("https://regex101.com/", 0);
+		crawl("https://regex101.com/", 0, urlLinks);
 		//crawl("https://www.javatpoint.com/digital-electronics", 0);
 		/*
 		 * for(String key : urlLinks.keySet()) {
