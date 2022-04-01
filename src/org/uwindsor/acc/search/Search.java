@@ -17,13 +17,13 @@ public class Search
 	
 	static CacheModule cacheModule = CacheModule.getInstance();
 	// Function 1 : Reading Hash Map
-	public static Map<String, HashMap<String, String>> readDB(String path)
+	public static Map<String, HashMap<String, String>> readDB(File data)
 	{
 		Map<String, HashMap<String, String>> hashMapDB = new HashMap<String, HashMap<String, String>>();
 		BufferedReader br = null;
 		try
 		{
-			File data = new File(path);
+			
 			br = new BufferedReader(new FileReader(data));
 			String line = null;
 			while ((line = br.readLine()) != null)
@@ -120,30 +120,32 @@ public class Search
         		count++;
         	}
         }
+        // Finding the smallest HashTable
         int indexSmallest = indexOfSmallest(lengthArr);
         HashMap<String, String> smallest = arrList.get(indexSmallest);
-        if( smallest!= null ) {
-        arrList.remove(indexSmallest);
-        iterator = arrList.iterator();
-        while(iterator.hasNext())
+        if( smallest!= null ) 
         {
-        	HashMap<String, String> element = iterator.next();
-        	for(String key : smallest.keySet())
-            {
-            	if(element.containsKey(key))
-            	{
-            		String newFreq = Integer.toString(Integer.parseInt(smallest.get(key)) + Integer.parseInt(element.get(key)));
-            		smallest.put(key, newFreq);
-            	}
-            	else
-            	{
-            		smallest.remove(key);
-            	}
-            }
+	        arrList.remove(indexSmallest);
         }
-        return smallest;
-        }
-        return null;
+	    iterator = arrList.iterator();
+	    while(iterator.hasNext())
+	    {
+	    	HashMap<String, String> element = iterator.next();
+	       	for(String key : element.keySet())
+	        {
+	           	if(smallest.containsKey(key))
+	           	{
+	           		String newFreq = Integer.toString(Integer.parseInt(smallest.get(key)) + Integer.parseInt(element.get(key)));
+	           		smallest.put(key, newFreq);
+	           	}
+	           	else
+	           	{
+	           		smallest.remove(key);
+	           	}
+	        }
+	    }
+	    return smallest;
+        
 	}
 	
 	// Union
@@ -160,16 +162,21 @@ public class Search
         	lengthArr[count] = element.size();
         	count++;
         }
+        // Finding the smallest HashTable
         int indexSmallest = indexOfSmallest(lengthArr);
         HashMap<String, String> smallest = arrList.get(indexSmallest);
-        arrList.remove(indexSmallest);
+        if(smallest!=null)
+        {
+	        //removing the smallest from the list
+	        arrList.remove(indexSmallest);
+        }
         iterator = arrList.iterator();
         while(iterator.hasNext())
         {
         	HashMap<String, String> element = iterator.next();
-        	for(String key : smallest.keySet())
+        	for(String key : element.keySet())
             {
-            	if(element.containsKey(key))
+            	if(smallest.containsKey(key))
             	{
             		String newFreq = Integer.toString(Integer.parseInt(smallest.get(key)) + Integer.parseInt(element.get(key)));
             		smallest.put(key, newFreq);
@@ -181,6 +188,7 @@ public class Search
             }
         }
         return smallest;
+        
 	}
 	
 	
@@ -191,11 +199,13 @@ public class Search
 		String pathURL = System.getProperty("user.dir")+"/writeURL.txt";
 		
 		// Reading HashMap
-		Map<String, HashMap<String, String>> hashTable = readDB(pathDB);
-		Map<String, String> dbURL = LoadDB.readDBURLs(pathURL);
+		File dataDB = new File(pathDB);
+		File dataURL = new File(pathURL);
+		Map<String, HashMap<String, String>> hashTable = readDB(dataDB);
+		Map<String, String> dbURL = LoadDB.readDBURLs(dataURL);
 		List<HashMap<String, String>> arrList = new ArrayList<HashMap<String, String>>();
 		for( String searchTerm: searchTerms ) {
-			
+			// Cache Module integration
 			if( !cacheModule.isCacheEntryPresent(searchTerm) ) {
 				HashMap<String, String> searchResult = searching(searchTerm, hashTable, dbURL);
 				arrList.add(searchResult);
@@ -217,27 +227,29 @@ public class Search
 		{
 			result = findUnion(arrList);
 		}
-		result = LoadDB.sortByValueString(result);
+		HashMap<String, String> finalResult = LoadDB.sortByValueString(result);
 	    // Iterate over HashMap entries
 		
-		if( result== null ) {
+		if( finalResult== null ) {
 			return ;
 		}
-		for (Map.Entry<String, String> entry : result.entrySet())
+		for (Map.Entry<String, String> entry : finalResult.entrySet())
         {
-        	// Put key and value separated by a colon
-			System.out.println(entry.getKey() + " " + entry.getValue() + " ");    
+        	// Put key and value separated
+			System.out.println(entry.getKey());    
         }
 	}
 	// Main
 	public static void main(String[] Args)
 	{
-		String pathDB = "/Users/raks/Desktop/ACC/test/writeDB.txt";
-		String pathURL = "/Users/raks/Desktop/ACC/test/writeURL.txt";
+		String pathDB = System.getProperty("user.dir")+"/writeDB.txt";
+		String pathURL = System.getProperty("user.dir")+"/writeURL.txt";
 		
 		// Reading HashMap
-		Map<String, HashMap<String, String>> hashTable = readDB(pathDB);
-		Map<String, String> dbURL = LoadDB.readDBURLs(pathURL);
+		File dataDB = new File(pathDB);
+		File dataURL = new File(pathURL);
+		Map<String, HashMap<String, String>> hashTable = readDB(dataDB);
+		Map<String, String> dbURL = LoadDB.readDBURLs(dataURL);
 		List<HashMap<String, String>> arrList = new ArrayList<HashMap<String, String>>();
 		String[] searchTerms = {"chole", "Bhature"};
 		for(String searchTerm: searchTerms)

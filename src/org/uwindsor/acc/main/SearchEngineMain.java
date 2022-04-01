@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
+
 import org.uwindsor.acc.loaddb.LoadDB;
 import org.uwindsor.acc.search.Search;
 import org.uwindsor.acc.searchstringprocessing.RegexFilter;
@@ -25,7 +26,7 @@ import org.uwindsor.acc.webcrawler.PageData;
 public class SearchEngineMain {
 	
 	private static HashMap<String, PageData> urlLinks = new HashMap<String, PageData>();
-	private static final int maximum_depth = 3;
+	private static final int maximum_depth = 10;
 
 	public static void main(String[] args) throws IOException, InvalidInputException {
 		
@@ -33,9 +34,8 @@ public class SearchEngineMain {
 		Scanner in = new Scanner(System.in);
 		System.out.println("****************************************");
 		System.out.println("1. Crawler");
-		System.out.println("2. Find the closest word in dictionary using Edit Distance");
-		System.out.println("3. Load/Create DB");
-		System.out.println("4. Perform Search");
+		System.out.println("2. Load/Create DB");
+		System.out.println("3. Perform Search");
 		System.out.println("Enter Menu Item:");
 		Integer menu = Integer.parseInt( in.nextLine() );
 		System.out.println("****************************************");
@@ -43,7 +43,8 @@ public class SearchEngineMain {
 		switch( menu ) {
 			
 		case 1:
-			Crawler.crawl("https://en.wikipedia.org/wiki/Main_Page", 0, urlLinks);
+			String urlToCrawl = in.nextLine();
+			Crawler.crawl(urlToCrawl, 0, urlLinks);
 			//crawl("https://www.javatpoint.com/digital-electronics", 0);
 			/*
 			 * for(String key : urlLinks.keySet()) {
@@ -79,9 +80,6 @@ public class SearchEngineMain {
 			break;
 			
 		case 2:
-			break;
-		
-		case 3:
 			List<List<String>> records = new ArrayList<>();
 			try (BufferedReader br = new BufferedReader(new FileReader("test.csv"))) {
 			    String line;
@@ -97,7 +95,7 @@ public class SearchEngineMain {
 			}
 			try
 			{
-				LoadDB.loadDataBase(urls, "", "");
+				LoadDB.loadDataBase(urls);
 			}
 			catch(Exception e)
 			{
@@ -105,11 +103,7 @@ public class SearchEngineMain {
 			}
 			System.out.println("do nothing");
 			break;
-		case 4:
-			Search.performSearch(new String[]{"prepare","address"});
-			
-			break;
-		case 5:
+		case 3:
 			String searchString = in.nextLine();
 			RegexFilter rFilter = new RegexFilter();
 			StopWords sw = new StopWords();
