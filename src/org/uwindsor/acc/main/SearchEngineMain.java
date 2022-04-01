@@ -43,7 +43,7 @@ public class SearchEngineMain {
 		switch( menu ) {
 			
 		case 1:
-			Crawler.crawl("https://regex101.com/", 0, urlLinks);
+			Crawler.crawl("https://en.wikipedia.org/wiki/Main_Page", 0, urlLinks);
 			//crawl("https://www.javatpoint.com/digital-electronics", 0);
 			/*
 			 * for(String key : urlLinks.keySet()) {
