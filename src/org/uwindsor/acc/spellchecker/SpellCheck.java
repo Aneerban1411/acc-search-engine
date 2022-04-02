@@ -1,8 +1,9 @@
-package acc_porj;
+package org.uwindsor.acc.spellchecker;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class SpellCheck {
@@ -22,7 +23,7 @@ public class SpellCheck {
 		{
 			File files = new File("C:/Users/mnkgr/eclipse-workspace/Acc_project/src/words2.txt");
 			Scanner myReader = new Scanner(files);
-			
+			int count = 0;
 			while (myReader.hasNextLine())
 			{
 				String data = myReader.nextLine();

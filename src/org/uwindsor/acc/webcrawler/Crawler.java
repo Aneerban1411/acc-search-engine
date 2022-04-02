@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class Crawler {
 
 	private static HashMap<String, PageData> urlLinks = new HashMap<String, PageData>();
-	private static final int maximum_depth = 3;
+	private static final int maximum_depth = 10;
 	
 	/**
     * Inserts string URL and the depth until which Crawler will crawl
@@ -28,7 +28,7 @@ public class Crawler {
 	public static void crawl(String url, int depth, HashMap<String, PageData> urlLinksLocal )
 	{
 		//Max number of URLs to crawl and condition to limit depth
-		if(urlLinksLocal.size() < 200 && !urlLinksLocal.containsKey(url) && depth < maximum_depth)
+		if(urlLinksLocal.size() < 10000 && !urlLinksLocal.containsKey(url) && depth < maximum_depth)
 		{
 			try 
 			{

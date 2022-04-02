@@ -54,9 +54,7 @@ public class LoadDB {
         // Iterating over each word
         for(int i=0;i<words.length;i++)
         {
-            // Condition to check if the
-            // Array element is present
-            // the hash-map
+            // Condition to check if the Array element is present the hash-map
             if(freqMap.containsKey(words[i]))
             {
             	freqMap.put(words[i], freqMap.get(words[i])+1);
@@ -72,61 +70,41 @@ public class LoadDB {
     public static HashMap<String, String> sortByValueString(HashMap<String, String> map)
     {
     	if( map==null) {
-    		return map;
+    		return null;
     	}
-        // Create a list from elements of HashMap
-        List<Map.Entry<String, String> > list
-            = new LinkedList<Map.Entry<String, String> >(
-                map.entrySet());
- 
-        // Sort the list using lambda expression
-        Collections.sort(
-            list,
-            (i1,
-             i2) -> i1.getValue().compareTo(i2.getValue()));
- 
-        // put data from sorted list to hashmap
-        HashMap<String, String> temp
-            = new LinkedHashMap<String, String>();
-        for (Map.Entry<String, String> aa : list) {
-            temp.put(aa.getKey(), (String)aa.getValue());
-        }
-        return temp;
+    	HashMap<String, String> sorted = new HashMap<String, String>();
+    	map.entrySet()
+    	  .stream()
+    	  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())) 
+    	  .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
+        return sorted;
     }
+    
     
     public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> map)
     {
-        // Create a list from elements of HashMap
-        List<Map.Entry<String, Integer> > list
-            = new LinkedList<Map.Entry<String, Integer> >(
-                map.entrySet());
- 
-        // Sort the list using lambda expression
-        Collections.sort(
-            list,
-            (i1,
-             i2) -> i1.getValue().compareTo(i2.getValue()));
- 
-        // put data from sorted list to hashmap
-        HashMap<String, Integer> temp
-            = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
+    	if( map==null) {
+    		return map;
+    	}
+    	HashMap<String, Integer> sorted = new HashMap<String, Integer>();
+    	map.entrySet()
+    	  .stream()
+    	  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())) 
+    	  .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
+        return sorted;
     }
     
-    public static HashMap<String, String> first100(HashMap<String, Integer> map) {
-    	int count = 100;
-    	HashMap<String,String> freqMap100=new HashMap<String,String>();
+    public static HashMap<String, String> first500(HashMap<String, Integer> map) {
+    	int count = 500;
+    	HashMap<String,String> freqMap500=new HashMap<String,String>();
     	for (Map.Entry<String, Integer> mapElement : map.entrySet()) {
-    		freqMap100.put(mapElement.getKey(), Integer.toString(mapElement.getValue()));
+    		freqMap500.put(mapElement.getKey(), Integer.toString(mapElement.getValue()));
     		count--;
     		if(count==0){
     			break;
     		}
     	}
-    	return freqMap100;
+    	return freqMap500;
     }
     
     public static void writeDB(HashMap<String, HashMap<String, String>> map, String path)
@@ -169,14 +147,14 @@ public class LoadDB {
             }
         }
     }
-    public static HashMap<String, String> readDBURLs(String path)
+    public static HashMap<String, String> readDBURLs(File file)
     {
     	
     	HashMap<String, String> dbURL = new HashMap<String, String>();
     	BufferedReader br = null;
     	try
     	{
-    		File file = new File(path);
+    		
     		br = new BufferedReader(new FileReader(file));
     		String str = null;
     		while((str = br.readLine())!=null)
@@ -244,36 +222,40 @@ public class LoadDB {
     	
     }
 
-    public static void loadDataBase(final String[] urls, String pathDBKeys, String pathDBURLs) throws InvalidInputException {
+    public static void loadDataBase(final String[] urls) throws InvalidInputException {
+    	String pathDBKeys = System.getProperty("user.dir")+"/writeDB.txt";
+		String pathDBURLs = System.getProperty("user.dir")+"/writeURL.txt";
+		
     	HashMap<String, HashMap<String, String>> dbKeys;
     	HashMap<String, String> dbURLs;
-    	if(pathDBKeys == "")
+    	
+    	File dataDB = new File(pathDBKeys);
+        File dataURL = new File(pathDBURLs);
+    	
+    	
+    	if(dataDB.exists())
+    	{
+    		dbKeys = (HashMap<String, HashMap<String, String>>) Search.readDB(dataDB);
+    		
+    	}
+    	else
     	{
     		dbKeys = new HashMap<String, HashMap<String, String>>();
-    		System.out.println("Enter path to write New DB for keys");
-    		Scanner sc = new Scanner(System.in);
-    		pathDBKeys = sc.nextLine();
-    	}
-    	else
-    	{
-    		dbKeys = (HashMap<String, HashMap<String, String>>) Search.readDB(pathDBKeys);
+   
     	}
     		
-    	if(pathDBURLs == "")
+    	if(dataURL.exists())
     	{
-    		dbURLs = new HashMap<String, String>();
-    		System.out.println("Enter path to write New DB for URLs");
-    		Scanner sc = new Scanner(System.in);
-    		pathDBURLs = sc.nextLine();
+    		dbURLs = readDBURLs(dataURL);
     	}
     	else
     	{
-    		dbURLs = readDBURLs(pathDBURLs);
+    		dbURLs = new HashMap<String, String>();
+    		
     	}
     	for(String url:urls)
     	{
 	    	String text = convertText(url);
-	    	//String newText = removeStopWords(text);
 			
 			RegexFilter rFilter = new RegexFilter();
 			StopWords sw = new StopWords();
@@ -292,9 +274,9 @@ public class LoadDB {
 	    	dbURLs.put(url, newText);
 	    	HashMap<String, Integer> freqMap = countFreq(newText);
 	    	freqMap = sortByValue(freqMap);
-	    	HashMap<String, String> freqMap100 = new HashMap<String, String>();
-	    	freqMap100 = first100(freqMap);
-	    	for(Map.Entry<String, String> keyword:freqMap100.entrySet())
+	    	HashMap<String, String> freqMap500 = new HashMap<String, String>();
+	    	freqMap500 = first500(freqMap);
+	    	for(Map.Entry<String, String> keyword:freqMap500.entrySet())
 	    	{
 	    		if(dbKeys.containsKey(keyword.getKey()))
 	    		{
