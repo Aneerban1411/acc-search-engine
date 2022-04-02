@@ -54,9 +54,7 @@ public class LoadDB {
         // Iterating over each word
         for(int i=0;i<words.length;i++)
         {
-            // Condition to check if the
-            // Array element is present
-            // the hash-map
+            // Condition to check if the Array element is present the hash-map
             if(freqMap.containsKey(words[i]))
             {
             	freqMap.put(words[i], freqMap.get(words[i])+1);
@@ -97,14 +95,14 @@ public class LoadDB {
     }
     
     public static HashMap<String, String> first500(HashMap<String, Integer> map) {
-    	//int count = 500;
+    	int count = 500;
     	HashMap<String,String> freqMap500=new HashMap<String,String>();
     	for (Map.Entry<String, Integer> mapElement : map.entrySet()) {
     		freqMap500.put(mapElement.getKey(), Integer.toString(mapElement.getValue()));
-    		/*count--;
+    		count--;
     		if(count==0){
     			break;
-    		}*/
+    		}
     	}
     	return freqMap500;
     }

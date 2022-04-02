@@ -107,45 +107,71 @@ public class Search
 	public static HashMap<String, String> findIntersection(List<HashMap<String, String>> arrList)
 	{
 		// get Iterator for looping through AL
-        Iterator<HashMap<String, String>> iterator = arrList.iterator();
-        int[] lengthArr = new int[arrList.size()];
-        int count = 0;
-        // iterate AL using while-loop
-        while(iterator.hasNext())
-        {
-        	HashMap<String, String> element = iterator.next();
-        	if( element!=null ) {
-        		lengthArr[count] = element.size();
-        	
-        		count++;
-        	}
-        }
-        // Finding the smallest HashTable
-        int indexSmallest = indexOfSmallest(lengthArr);
-        HashMap<String, String> smallest = arrList.get(indexSmallest);
-        if( smallest!= null ) 
-        {
-	        arrList.remove(indexSmallest);
-        }
-	    iterator = arrList.iterator();
-	    while(iterator.hasNext())
-	    {
-	    	HashMap<String, String> element = iterator.next();
-	       	for(String key : element.keySet())
+		if(arrList == null || arrList.size()==0) {
+			return null;
+		}
+			if(arrList.size()>1) {
+	        Iterator<HashMap<String, String>> iterator = arrList.iterator();
+	        int[] lengthArr = new int[arrList.size()];
+	        int count = 0;
+	        // iterate AL using while-loop
+	        while(iterator.hasNext())
 	        {
-	           	if(smallest.containsKey(key))
-	           	{
-	           		String newFreq = Integer.toString(Integer.parseInt(smallest.get(key)) + Integer.parseInt(element.get(key)));
-	           		smallest.put(key, newFreq);
-	           	}
-	           	else
-	           	{
-	           		smallest.remove(key);
-	           	}
+	        	HashMap<String, String> element = iterator.next();
+	        	if( element!=null ) {
+	        		lengthArr[count] = element.size();
+	        	
+	        	}
+	        	else {
+	        		lengthArr[count] = 1000;
+	        	}
+	        	count++;
 	        }
-	    }
-	    return smallest;
-        
+	        // Finding the smallest HashTable
+	        int indexSmallest = indexOfSmallest(lengthArr);
+	        HashMap<String, String> smallest = arrList.get(indexSmallest);
+	        try {
+	        count = 0;
+	        while( smallest == null ) 
+	        {
+		        smallest = arrList.get(0);
+		        arrList.remove(0);
+		        count++;
+		        if (count == arrList.size()-1) {
+		        	return null;
+		        }
+	        }
+	        }
+	        catch(IndexOutOfBoundsException e) {
+	        	return null;
+	        }
+	        //arrList.remove(indexSmallest);
+		    iterator = arrList.iterator();
+		    while(iterator.hasNext())
+		    {
+		    	HashMap<String, String> element = iterator.next();
+		    	if(element == null)
+		    	{
+		    		continue;
+		    	}
+		       	for(String key : element.keySet())
+		        {
+		           	if(smallest.containsKey(key))
+		           	{
+		           		String newFreq = Integer.toString(Integer.parseInt(smallest.get(key)) + Integer.parseInt(element.get(key)));
+		           		smallest.put(key, newFreq);
+		           	}
+		           	else
+		           	{
+		           		smallest.remove(key);
+		           	}
+		        }
+		    }
+		    return smallest;
+		}
+			else {
+				return arrList.get(0);
+			}
 	}
 	
 	// Union
