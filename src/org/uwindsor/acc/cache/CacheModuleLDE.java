@@ -1,6 +1,7 @@
 package org.uwindsor.acc.cache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +55,7 @@ public class CacheModuleLDE {
 			return false;
 		}
 		
-		for( String keySing: keys){
-			if( key.equals(keySing))
-				return true;
-		}
-		return false;
+		return keys.contains(key);
 	}
 	
 	/**
@@ -185,9 +182,21 @@ public class CacheModuleLDE {
 			String keyToRemove = getCacheEntryWithLowestHit();
 			removeCacheEntry(keyToRemove);
 		}
-		
 		keys.add(key);
 		pages.add(pageIds);
+		List<String> oldKeys = new ArrayList<>(keys);
+		List<HashMap<String,String>> oldpages = new ArrayList<>(pages);
+		
+		List<String> sortedList = keys.stream().sorted().toList();
+		keys = new ArrayList<String>();
+		keys.addAll(sortedList);
+		
+		for(int i=0;i<keys.size();i++) {
+			int oldIndex = oldKeys.indexOf(keys.get(i));
+			pages.set(i, oldpages.get(oldIndex));
+		}
+		
+		
 		hitCount.put(key, 0);
 	}
 	
